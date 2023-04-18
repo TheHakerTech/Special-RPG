@@ -1,0 +1,1 @@
+class MaxTextLimitedError(Exception): pass
