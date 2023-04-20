@@ -16,8 +16,8 @@
 [![License](https://img.shields.io/badge/Лицензия-MIT-blue.svg)](/LICENSE)
 [![Discord](https://img.shields.io/discord/992780447870357574?logo=discord)]([/LICENSE](https://discord.gg/HjJCwm5))
 [![Status](https://img.shields.io/badge/Статус-активно-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/TheHakerTech/Craft_Box_RPG.svg)](https://github.com/TheHakerTech/Craft_Box_RPG/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/TheHakerTech/Craft_Box_RPG.svg)](https://github.com/TheHakerTech/Craft_Box_RPG/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/TheHakerTech/Special-RPG.svg)](https://github.com/TheHakerTech/Special-RPG/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/TheHakerTech/Special-RPG.svg)](https://github.com/TheHakerTech/Special-RPG/pulls)
 
 </div>
 

@@ -40,6 +40,8 @@ class Player(Entity):
         interesting: str | None
     ) -> None:
         super().__init__(name, hp, items, description, interesting)
+        self.total_location = None
+        self.total_think = 'Nothing'
 
 
     
