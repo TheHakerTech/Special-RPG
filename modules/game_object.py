@@ -5,10 +5,10 @@ class GameObject:
     def __init__(
         self,
         description: str,
-        interestring=None
+        interesting: str | None
     ) -> None:
-        self.description = description
-        self.interesting = interestring
+        self.description: str = description
+        self.interesting: str | None = interesting
     
     def __doc__(self) -> None:
         return self.description

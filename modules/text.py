@@ -43,7 +43,7 @@ def special_print(text, color, end='\n', delay=float(settings['delay'][1]), _add
 
 
 def redrow():
-    os.system('cls||clear')
+    print('\033[2J')
     for text in untimed_text:
         print(text)
 

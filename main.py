@@ -479,7 +479,7 @@ class Save:
 
     def think(self):
         redrow()
-        special_print(self.player.total_think, '\x1B36[;1m')
+        special_print(self.player.total_think, '\x1B[36;1m')
     def go(self, arg):
         redrow()
         if arg.lower() == 'e':
