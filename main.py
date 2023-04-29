@@ -487,6 +487,9 @@ class Save:
                 self.player.total_location: Location = self.player.total_location.parent
         else:
             self.player.total_location: Location = self.player.total_location.under_locs[arg]
+        print(self.player.total_location.events)
+        if self.player.total_location.events['OnInto'] != None:
+            self.player.total_location.events['OnInto'].activate()
         self.look()
 
     def _save(self):

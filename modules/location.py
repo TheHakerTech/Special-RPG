@@ -2,6 +2,7 @@
 from __future__ import annotations
 from modules.game_object import GameObject
 import modules.tools as tools
+import modules.events as events
 class Location(GameObject):
     def __init__(
         self,
@@ -41,6 +42,10 @@ class Location(GameObject):
         else:
             self.entities = {}
         self.parent = parent
+        # Events
+        self.events = {
+            'OnInto':None
+        }
 
     def del_item(self, delete):
         tools.recreate_dict(self.items, delete)
@@ -49,6 +54,9 @@ class Location(GameObject):
     def del_underloc(self, delete):
         tools.recreate_dict(self.under_locs, delete)
 
+    def bind(self, evt_name: str, evt_func, func_params=None):
+        self.events[evt_name] = events.Event(evt_name, evt_func, func_params)
+        return self
 
 
     def add(self, locs) -> Location:
