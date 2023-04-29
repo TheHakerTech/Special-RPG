@@ -4,6 +4,7 @@ import modules.items as items
 
 def give(ent, item: items.Item):
     ent.items[str(len(ent.items)+1)] = item
+    item.events['OnReceived'].activate()
 def recreate_dict(dict: dict, delete):
     del dict[delete]
     c = dict.copy()

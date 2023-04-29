@@ -24,3 +24,4 @@ class GameObject:
     
     def bind(self, evt_name: str, evt_func: Callable, func_params=None):
         self.events[evt_name] = events.Event(evt_name, evt_func, func_params)
+        return self

@@ -361,11 +361,12 @@ class Game:
 
 class Save:
     def __init__(self, player: entity.Player, game: Game) -> None:
-        self.initialition_locations()
         # Init attributes
         self.player: entity.Player = player
+        self.initialition_locations()
         self.player.total_location: Location = self.location
         self.game: Game = game
+        
         # Init menu
         self.params_commands = [GO, TALK, TAKE, PUT, CRAFT]
         self.no_params_commands = [INV, THINK, LOOK, SAVE, EXIT, SETTINGS]
@@ -484,12 +485,28 @@ class Save:
         redrow()
         if arg.lower() == 'e':
             if self.player.total_location.parent != None:
-                self.player.total_location: Location = self.player.total_location.parent
+                if self.player.total_location.parent.exitable:
+                    self.player.total_location.events['OnExit'].activate()
+                    self.player.total_location: Location = self.player.total_location.parent
+                    if self.player.total_location.events['OnInto'] != None:
+                        self.player.total_location.events['OnInto'].activate()
+                    # If this location was not located...
+                    if not self.player.total_location.located:
+                        self.player.total_location.located = True
+                        if self.player.total_location.events['OnLocated'] != None:
+                            self.player.total_location.events['OnLocated'].activate()
+                    else:
+                        self.player.total_location.located = True
         else:
             self.player.total_location: Location = self.player.total_location.under_locs[arg]
-        print(self.player.total_location.events)
-        if self.player.total_location.events['OnInto'] != None:
-            self.player.total_location.events['OnInto'].activate()
+            if self.player.total_location.events['OnInto'] != None:
+                self.player.total_location.events['OnInto'].activate()
+            if not self.player.total_location.located:
+                self.player.total_location.located = True
+                if self.player.total_location.events['OnLocated'] != None:
+                    self.player.total_location.events['OnLocated'].activate()
+            else:
+                self.player.total_location.located = True
         self.look()
 
     def _save(self):
@@ -528,11 +545,13 @@ class Save:
         self.player.total_location.entities[arg].start_dialog()
 
     def take(self, arg: str):
-        self.player.items[str(len(self.player.items)+1)] = self.player.total_location.items[arg]
-        special_print(f'Вы подобрали: {self.player.total_location.items[arg].name}', '\x1B[35;1m')
-        self.player.total_location.del_item(arg)
+        if self.player.total_location.items[arg].takeable:
+            self.player.items[str(len(self.player.items)+1)] = self.player.total_location.items[arg]
+            special_print(f'Вы подобрали: {self.player.total_location.items[arg].name}', '\x1B[35;1m')
+            self.player.total_location.items[arg].events['OnTaken'].activate()
+            self.player.total_location.del_item(arg)
         
-    def put(self): print('put')
+    def put(self): pass
     def craft(self): print('craft')
     def exit(self):
         special_print('Вы действительно хотите выйти?y/n', '\x1B[31;1m')
@@ -667,7 +686,7 @@ class Save:
 
     def initialition_locations(self):
         self.location = Location('Room1', 'Just a room', entities=[entity.test_ent], items=[items.test_item,items.test_item]).add([
-            Location('Room2 in room 1', 'Just a room')]
+            Location('Room2 in room 1', 'Just a room').bind('OnLocated', tools.give, [self.player, items.test_item])]
         )
     
     def menu(self):
