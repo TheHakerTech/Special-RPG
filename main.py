@@ -33,9 +33,11 @@ DELETE   = 'delete'
 SETTINGS = 'settings'
 EXIT     = 'exit'
 INV      = 'inv'
+USE      = 'use'
 THINK    = 'think'
 GO       = 'go'
 TIME     = 'time'
+ADVANCEMENT = 'advance'
 STATUS   = 'status'
 SAVE     = 'save'
 TALK     = 'talk'
@@ -368,16 +370,19 @@ class Save:
         self.game: Game = game
         
         # Init menu
-        self.params_commands = [GO, TALK, TAKE, PUT, CRAFT]
-        self.no_params_commands = [INV, THINK, LOOK, SAVE, EXIT, SETTINGS]
+        self.params_commands = [GO, TALK, USE, TAKE, PUT, CRAFT]
+        self.no_params_commands = [INV, THINK, LOOK, STATUS, ADVANCEMENT, SAVE, EXIT, SETTINGS]
         self.menu_context = {
             INV:('Инвентарь',self.inv),
+            USE:('Использовать предмет', self.use),
             THINK:('Посмотреть, что думает герой',self.think),
             GO:('Передвижение (go <номер>)',self.go),
             LOOK:('Осмотреться', self.look),
             TALK:('Поговорить',self.talk),
             TAKE:('Взять предмет',self.take),
+            ADVANCEMENT:('Достижения',self.advancements),
             SAVE:('Сохранить игру', self._save),
+            STATUS:('Посмотреть состояние', self.status),
             PUT:('Положить предмет',self.put),
             SETTINGS:('Настройки',self.settings),
             CRAFT:('Скрафтить что-то',self.craft),
@@ -421,6 +426,10 @@ class Save:
                         self.look()
                     elif choice.lower().rstrip() == SAVE:
                         self._save()
+                    elif choice.lower().rstrip() == ADVANCEMENT:
+                        self.advancements()
+                    elif choice.lower().rstrip() == STATUS:
+                        self.status()
                     elif choice.lower().rstrip() == SETTINGS:
                         self.settings()
                     elif choice.lower().rstrip() == EXIT:
@@ -439,6 +448,14 @@ class Save:
                     elif choice.split(' ')[0] == TAKE and len(choice.split(' ')) == 2:
                         if choice.split(' ')[1] in self.player.total_location.items.keys():
                             self.take(choice.split(' ')[1])
+                            debug(f'Invoked: {choice.lower().rstrip()}')
+                        else:
+                            special_print('Неверный номер', '\x1B[31;1m')
+                            time.sleep(len('Неверный номер')/50)
+                            redrow()
+                    elif choice.split(' ')[0] == PUT and len(choice.split(' ')) == 2:
+                        if choice.split(' ')[1] in self.player.total_location.items.keys():
+                            self.put(choice.split(' ')[1])
                             debug(f'Invoked: {choice.lower().rstrip()}')
                         else:
                             special_print('Неверный номер', '\x1B[31;1m')
@@ -478,9 +495,19 @@ class Save:
         else:
             special_print('(ничего)', '\x1B[30;1m')
 
+    def advancements(self):
+        redrow()
+        special_print('Достижения', '\x1B[34;1m')
+        for advance in self.player.maden_advancements.list:
+            special_print(advance.name, '\x1B[34;1m')
+            special_print(advance.description+' '+advance.interesting, '\x1B[35;1m')
+
     def think(self):
         redrow()
         special_print(self.player.total_think, '\x1B[36;1m')
+
+    def use(self): print('use')
+
     def go(self, arg):
         redrow()
         if arg.lower() == 'e':
@@ -513,6 +540,10 @@ class Save:
         redrow()
         saves_m.save_game(self.game.save_name, self)
         special_print('Сохранено', '\x1B[34;1m')
+
+    def status(self):
+        color = '\x1B[31;1m' if self.player.status == 'Голод' else '\x1B[35;1m'
+        special_print(self.player.status, color)
 
     def look(self):
         redrow()
@@ -551,7 +582,13 @@ class Save:
             self.player.total_location.items[arg].events['OnTaken'].activate()
             self.player.total_location.del_item(arg)
         
-    def put(self): pass
+    def put(self, arg):
+        tools.putin_location(self.player.total_location, self.player.items[arg])
+        self.player.items[arg].events['OnPuten'].activate()
+        self.player.del_item(arg)
+        self.look()
+
+
     def craft(self): print('craft')
     def exit(self):
         special_print('Вы действительно хотите выйти?y/n', '\x1B[31;1m')

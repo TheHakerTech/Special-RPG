@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 import modules.entity as entity
+import modules.advancement as adv
 import modules.items as items
 
 def give(ent, item: items.Item):
     ent.items[str(len(ent.items)+1)] = item
     item.events['OnReceived'].activate()
+def putin_location(loc, item: items.Item):
+    loc.items[str(len(loc.items)+1)] = item
 def recreate_dict(dict: dict, delete):
     del dict[delete]
     c = dict.copy()
     dict.clear()
     dict.update({str(i): j for i, j in enumerate(c.values(),1)})
     return dict
+def give_advancement(ent, advancement: adv):
+    ent.maden_advancements.append(advancement)
+    ent.events['OnAdvancement'].activate()
 def controlled(check):
     # Допытываем пользователя, пока не сработает check
     while True:

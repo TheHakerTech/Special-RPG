@@ -18,7 +18,8 @@ class Item(GameObject):
         self.events = {
             'OnReceived':events.NullEvent(),
             'OnTaken':events.NullEvent(),
-            'OnPuten':events.NullEvent()
+            'OnPuten':events.NullEvent(),
+            'OnUsen':events.NullEvent()
         }
 
 test_item = Item('Паяльник', 'Испорльзуется для паяния микросхем')

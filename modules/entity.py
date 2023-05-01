@@ -3,6 +3,7 @@ from __future__ import annotations
 from modules.game_object import GameObject
 import modules.tools as tools
 from modules.dialog import *
+import modules.advancement as adv
 from modules.items import *
 from modules.text import *
 # Dict entity.name:entity
@@ -20,6 +21,7 @@ class Entity(GameObject):
         super().__init__(description, interesting=interesting)
         self.name = name
         self.hp = hp
+        self.status = 'Nothing'
         if items != list():
             self.items: dict = {k:v for (k, v) in [(str(k2), v2) for (k2, v2) in enumerate(
                 items,
@@ -98,7 +100,14 @@ class Player(Entity):
     ) -> None:
         super().__init__(name, hp, items, description, interesting)
         self.total_location = None # Current location
+        self.maden_advancements = adv.Advancements([
+            adv.Advancement('test', 'test')
+        ])
         self.total_think = 'Nothing' # Current dream
         self.spawnpoint = None # Current spawn
+        self.events = {
+            'OnStatusChange':events.NullEvent(),
+            'OnAdvancement':events.NullEvent()
+        }
 
 test_ent = NotPlayableEntity('Кэл', 100, [Item('asdasd', 'asdas')], [Dialog(TypeDialog.question, ['Сколько тебе лет?', {'1':[['54', 'Понял']], '2':[['34', 'Понял']]}])], 'asdasd')
