@@ -4,3 +4,5 @@ test.py
 targets.txt
 **\.gz
 story.md
+last_save.meta
+settings.json
