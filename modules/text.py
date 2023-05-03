@@ -32,7 +32,7 @@ def special_print(text, color, end='\n', delay=float(settings['delay'][1]), _add
     else:
         if settings['play_animation'][1] == 'true':
             print('\x1B[37;1m█\x1B[0m ', end='')
-            delay_print(text, '\x1B[35;1m', end='')
+            delay_print(text, color, end='')
             print(' '*(INSIDE_TEXT_SIZE-len(text)-1), end='')
             print('\x1B[37;1m█\x1B[0m')
             
