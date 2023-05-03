@@ -22,4 +22,19 @@ class Item(GameObject):
             'OnUsen':events.NullEvent()
         }
 
+class ShopItem(Item):
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        cost,
+        interestring=None, 
+        takeable=True,
+        putable=True
+    ) -> None:
+        super().__init__(name, description, interestring, takeable, putable)
+        self.cost = cost
+        self.item = Item(name, description, interestring, takeable=takeable, putable=putable)
+
+
 test_item = Item('Паяльник', 'Испорльзуется для паяния микросхем')

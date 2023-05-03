@@ -3,6 +3,8 @@ from __future__ import annotations
 from modules.game_object import GameObject
 import modules.tools as tools
 from modules.dialog import *
+from modules.shop import Shop
+from modules.currency import Currency
 import modules.advancement as adv
 from modules.items import *
 from modules.text import *
@@ -49,10 +51,12 @@ class NotPlayableEntity(Entity):
         items: list or tuple,
         dialog: list,
         description: str,
+        shop=None,
         interesting=None
     ) -> PlayableEntity:
         super().__init__(name, hp, items, description, interesting)
         self.dialog: list = dialog
+        self.shop = shop
 
     def start_dialog(self):
         for dialog in self.dialog:
@@ -88,18 +92,41 @@ class NotPlayableEntity(Entity):
                     tools.recreate_dict(answers, answer)
                     if answers == {}:
                         break
-          
+        if self.shop != None:
+            while True:
+                special_print('Магазин (e - выход)', '\x1B[35;1m')
+                self.shop.show()
+                result = input('\x1B[37;1m█\x1B[0m \x1B[35;1m-~>\x1B[;0m\x1B[31;1m ')
+                if result.lower() != 'e' and str(result) in self.shop.items.keys():
+                    if player.money.num >= self.shop.items[result].cost.num:
+                        player.money = player.money - self.shop.items[result].cost
+                        tools.give(player, self.shop.buy(result))
+                    else:
+                        special_print('Недостаточно кредитов!', '\x1B[31;1m')
+                        time.sleep(len('Недостаточно кредитов!')/50)
+                        redrow()
+                elif result.lower() == 'e':
+                    break
+                else:
+                    special_print('Неверный номер', '\x1B[31;1m')
+                    time.sleep(len('Неверный номер')/50)
+                    redrow()
+            redrow()
+
+
 class Player(Entity):
     def __init__(
         self,
         name: str,
         hp: int,
         items: list or tuple,
+        money: Currency,
         description: str,
         interesting: str | None
     ) -> None:
         super().__init__(name, hp, items, description, interesting)
         self.total_location = None # Current location
+        self.money = money
         self.maden_advancements = adv.Advancements([
             adv.Advancement('test', 'test')
         ])
@@ -109,5 +136,8 @@ class Player(Entity):
             'OnStatusChange':events.NullEvent(),
             'OnAdvancement':events.NullEvent()
         }
+player = None
 
-test_ent = NotPlayableEntity('Кэл', 100, [Item('asdasd', 'asdas')], [Dialog(TypeDialog.question, ['Сколько тебе лет?', {'1':[['54', 'Понял']], '2':[['34', 'Понял']]}])], 'asdasd')
+shop = Shop([ShopItem('test', 'testing', Currency(1))])
+
+test_ent = NotPlayableEntity('Кэл', 100, [Item('asdasd', 'asdas')], [Dialog(TypeDialog.text, ['Посмотрим, что я могу предложить тебе'])], 'asdasd', shop=shop)

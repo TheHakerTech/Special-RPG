@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import os.path
 
 # Functions checking
 def truefalse(arg):
@@ -43,13 +44,19 @@ default_settings = {
 
 def load_settings():
     global settings
-    settings_file = open(r'data/settings.json', 'r') 
+    if not os.path.exists('data/settings.json'):
+        update_settings()
+    settings_file = open('data/settings.json', 'r') 
     settings = json.loads(settings_file.read())
     settings_file.close()
 
 def update_settings():
     global settings
-    settings_file = open(r'data/settings.json', 'w')
-    settings_file.write(json.dumps(settings, skipkeys=True))
-    settings_file.close()
+    if os.path.exists('data/settings.json'):
+        settings_file = open('data/settings.json', 'w')
+        settings_file.write(json.dumps(settings, skipkeys=True))
+        settings_file.close()
+    else:
+        open('data/settings.json', 'w').close()
+        update_settings()
 load_settings()

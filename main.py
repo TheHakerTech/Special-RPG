@@ -5,6 +5,7 @@ import modules.entity as entity
 from modules.location import Location
 import modules.tools as tools
 import time
+from modules.currency import Currency
 import modules.items as items
 from modules.settings import *
 import modules.saves_m as saves_m
@@ -99,9 +100,16 @@ class Game:
                     s = self.main_menu_context[choice.lower().rstrip()][1]() # Invoke command
                     if choice.lower().rstrip() == NEW:
                         return s
-                    if choice.lower().rstrip() == LOAD:
+                    elif choice.lower().rstrip() == LOAD:
                         redrow()
                         return s
+                    elif choice.lower().rstrip() == LAST:
+                        if saves_m.last_save_name() != None and open('data/last_save.meta', 'r').read() in saves_m.saves():
+                            return s
+                        else:
+                            special_print('Нету последнего сохранения!', '\x1B[31;1m')
+                            time.sleep(len('Нету последнего сохранения!')/50)
+                            redrow()
                 elif self.l_params(choice) and len(choice.split(' ')) == 2:
                     if choice.split(' ')[0] == DELETE:
                         self.delete(choice.split(' ')[1])
@@ -124,6 +132,7 @@ class Game:
         self.player = entity.Player(
             name='player',
             hp=10,
+            money=Currency(10),
             items=[],
             description='Разборщик, пайщик, разбирается в электронике',
             interesting='?'
@@ -181,7 +190,10 @@ class Game:
         return self.save
 
     def last(self):
-        print('last')
+        self.save = saves_m.load_game(saves_m.last_save_name())
+        self.save_name = saves_m.last_save_name()
+        return self.save
+    
     def _list(self):
         redrow()
         special_print('Ваши сохранения', '\x1B[34;1m')
@@ -368,6 +380,7 @@ class Save:
         self.initialition_locations()
         self.player.total_location: Location = self.location
         self.game: Game = game
+        entity.player = self.player
         
         # Init menu
         self.params_commands = [GO, TALK, USE, TAKE, PUT, CRAFT]
@@ -405,8 +418,9 @@ class Save:
         return len(choice.split(' ')) == 2
     
     def main(self):
-        del untimed_text[2:-1]
+        del untimed_text[2:13]
         redrow()
+        special_print(f'Загружено сохранение {self.game.save_name}', '\x1B[35;1m', _add=True)
         # Show menu
         self.menu()
         special_print('Введите название команды', color='\x1B[31;1m', _add=True)
